@@ -11,11 +11,11 @@ export const signUpSchema = z.object({
   password: requiredString.min(8, "パスワードは8文字以上で入力してください"),
 });
 
-export type SignUpSchema = z.infer<typeof signUpSchema>;
+export type SignUpValues = z.infer<typeof signUpSchema>;
 
 export const loginSchema = z.object({
-  email: requiredString,
+  username: requiredString,
   password: requiredString,
 });
 
-export type LoginSchema = z.infer<typeof loginSchema>;
+export type LoginValues = z.infer<typeof loginSchema>;
