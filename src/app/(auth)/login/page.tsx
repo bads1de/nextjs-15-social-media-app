@@ -18,7 +18,7 @@ export default function Page() {
           <div className="space-y-5">
             <LoginForm />
             <Link href="/signup" className="block text-center hover:underline">
-              アカウントをお持ちの方はこちら
+              新規登録はこちら
             </Link>
           </div>
         </div>
