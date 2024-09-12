@@ -1,5 +1,4 @@
 import { PostData } from "@/lib/types";
-// import { formatRelativeDate } from "@/lib/utils";
 import Link from "next/link";
 import UserAvatar from "../UserAvatar";
 import { formatRelativeDate } from "@/lib/utils";
