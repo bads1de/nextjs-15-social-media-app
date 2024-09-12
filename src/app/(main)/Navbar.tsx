@@ -10,7 +10,7 @@ export default function Navbar() {
           bugbook
         </Link>
         <SearchField />
-        <UserButton />
+        <UserButton className="sm:ms-auto" />
       </div>
     </header>
   );
