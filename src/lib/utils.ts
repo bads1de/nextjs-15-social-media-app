@@ -26,3 +26,10 @@ export function formatRelativeDate(from: Date): string {
   // 異なる年の場合
   return format(from, "yyyy年MM月dd日", { locale: ja });
 }
+
+export function formatNumber(n: number): string {
+  return Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
+}
