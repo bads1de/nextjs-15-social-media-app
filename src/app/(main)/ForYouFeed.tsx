@@ -29,5 +29,11 @@ export default function ForYouFeed() {
     );
   }
 
-  return <>{query.data?.map((post) => <Post key={post.id} post={post} />)}</>;
+  return (
+    <>
+      {query.data.map((post) => (
+        <Post key={post.id} post={post} />
+      ))}
+    </>
+  );
 }

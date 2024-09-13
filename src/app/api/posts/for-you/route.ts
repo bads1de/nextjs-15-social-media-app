@@ -15,7 +15,7 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return Response.json({ posts });
+    return Response.json(posts);
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
