@@ -9,11 +9,7 @@ export const userDataSelect = {
 
 export const postDataInclude = {
   user: {
-    select: {
-      username: true,
-      displayName: true,
-      avatarUrl: true,
-    },
+    select: userDataSelect,
   },
 } satisfies Prisma.PostInclude;
 
