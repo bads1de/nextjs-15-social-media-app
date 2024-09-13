@@ -53,7 +53,10 @@ export default function FollowButton({
   });
 
   return (
-    <Button variant={data.isFollowedByUser ? "secondary" : "default"}>
+    <Button
+      variant={data.isFollowedByUser ? "secondary" : "default"}
+      onClick={() => mutate()}
+    >
       {data.isFollowedByUser ? "解除" : "フォロー"}
     </Button>
   );
