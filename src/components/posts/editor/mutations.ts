@@ -7,43 +7,61 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { submitPost } from "./actions";
+import { useSession } from "@/app/(main)/SessionProvider";
 
 /**
- * 投稿を送信するためのmutation
+ * 投稿を送信するためのmutationを作成し、成功時のフィードバック処理やクエリキャッシュの更新を行う。
+ *
+ * - 新しい投稿を最初のページの先頭に追加する。
+ * - 対象のクエリをキャンセルしてから、古いデータに新しい投稿を追加したクエリキャッシュを設定。
+ * - その後、データのないクエリを無効化して再取得を促すことで、新しい投稿が適切に表示されるようにする。
+ * - 成功時にはトーストで通知を表示し、エラー時にもエラーメッセージをトーストで表示する。
+ *
  * @returns {object} mutationオブジェクト
  */
 export function useSubmitPostMutation() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useSession();
 
+  // 投稿送信に使用するmutationを作成
   const mutation = useMutation({
+    // 投稿を送信するための関数を設定
     mutationFn: submitPost,
+    // 成功時の処理
     onSuccess: async (newPost) => {
-      // "post-feed", "for-you" というキーを持つクエリ、つまり投稿フィードのクエリを対象とする
-      const queryFilter: QueryFilters = { queryKey: ["post-feed", "for-you"] };
+      // 投稿フィードのクエリを対象とするフィルター設定
+      const queryFilter = {
+        queryKey: ["post-feed"],
+        predicate(query) {
+          return (
+            query.queryKey.includes("for-you") || // "for-you" フィードも対象
+            (query.queryKey.includes("post-feed") &&
+              query.queryKey.includes(user.id)) // 特定のユーザーのフィードも対象
+          );
+        },
+      } satisfies QueryFilters;
 
-      // 対象のクエリをキャンセルする。これは、古いデータが画面に表示されるのを防ぐため
+      // 対象のクエリをキャンセルし、古いデータが表示されないようにする
       await queryClient.cancelQueries(queryFilter);
 
-      // 対象のクエリデータを取得し、新しい投稿を追加したデータで更新する
+      // クエリキャッシュに存在するデータを更新する
       queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
         queryFilter,
         (oldData) => {
-          // 古いデータの最初のページを取得する。投稿フィードはページングされているため、複数のページが存在する可能性がある
+          // 最初のページを取得（ページングされている場合を考慮）
           const firstPage = oldData?.pages[0];
 
-          // 最初のページが存在する場合のみ更新を行う
+          // 最初のページが存在する場合のみ、新しい投稿を追加して更新
           if (firstPage) {
-            // 新しい投稿を最初のページの先頭に追加し、新しいデータを作成する
-            // 既存のページデータはそのまま保持する
             return {
               pageParams: oldData.pageParams,
               pages: [
                 {
-                  posts: [newPost, ...firstPage.posts], // 新しい投稿を先頭に追加
-                  nextCursor: firstPage.nextCursor,
+                  posts: [newPost, ...firstPage.posts], // 新しい投稿をページの先頭に追加
+                  nextCursor: firstPage.nextCursor, // 次のページのカーソルを保持
                 },
-                ...oldData.pages.slice(1), // 2ページ目以降はそのまま
+                ...oldData.pages.slice(1), // 2ページ目以降のデータはそのまま保持
               ],
             };
           }
@@ -51,20 +69,25 @@ export function useSubmitPostMutation() {
       );
 
       // データがないクエリを無効化し、再取得を促す
-      // これは、投稿フィードがまだ読み込まれていない場合に、新しい投稿を含むデータを取得するため
       queryClient.invalidateQueries({
         queryKey: queryFilter.queryKey,
         predicate(query) {
-          return !query.state.data;
+          // まだデータが存在しない場合にのみ再取得
+          return queryFilter.predicate(query) && !query.state.data;
         },
       });
 
+      // 成功時のトースト通知を表示
       toast({
         description: "ポストを投稿しました!",
       });
     },
+
+    // エラー時の処理
     onError(error) {
       console.error(error);
+
+      // エラー通知をトーストで表示
       toast({
         variant: "destructive",
         description: "ポストの投稿に失敗しました",
@@ -72,5 +95,6 @@ export function useSubmitPostMutation() {
     },
   });
 
+  // mutationオブジェクトを返す
   return mutation;
 }
