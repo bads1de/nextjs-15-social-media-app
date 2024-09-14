@@ -7,11 +7,12 @@ export default function useFollowerInfo(
   initialState: FollowerInfo,
 ) {
   const query = useQuery({
-    queryKey: ["followers", userId],
+    queryKey: ["follower-info", userId],
     queryFn: () =>
       kyInstance.get(`/api/users/${userId}/followers`).json<FollowerInfo>(),
     initialData: initialState,
     staleTime: Infinity,
   });
+
   return query;
 }
