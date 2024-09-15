@@ -1,5 +1,4 @@
 import avatarPlaceholder from "@/assets/avatar-placeholder.png";
-// import CropImageDialog from "@/components/CropImageDialog";
 import LoadingButton from "@/components/LoadingButton";
 import {
   Dialog,
@@ -31,6 +30,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Resizer from "react-image-file-resizer";
 import { useUpdateProfileMutation } from "./mutations";
+import CropImageDialog from "@/components/CropImageDialog";
 
 interface EditProfileDialogProps {
   user: UserData;
@@ -56,17 +56,23 @@ export default function EditProfileDialog({
   const [croppedAvatar, setCroppedAvatar] = useState<Blob | null>();
 
   const onSubmit = async (values: UpdateUserProfileValues) => {
+    const newAvatarFile = croppedAvatar
+      ? new File([croppedAvatar], `avatar_${user.id}.webp`)
+      : undefined;
     mutation.mutate(
       {
         values,
+        avatar: newAvatarFile,
       },
       {
         onSuccess: () => {
+          setCroppedAvatar(null);
           openChange(false);
         },
       },
     );
   };
+
   return (
     <Dialog open={open} onOpenChange={openChange}>
       <DialogContent>
@@ -136,12 +142,23 @@ interface AvatarInputProps {
 
 function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
   const [imageToCrop, setImageToCrop] = useState<File>();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function onImageSelected(image: File | undefined) {
     if (!image) {
       return;
     }
+
+    Resizer.imageFileResizer(
+      image,
+      1024,
+      1024,
+      "WEBP",
+      100,
+      0,
+      (uri) => setImageToCrop(uri as File),
+      "file",
+    );
   }
 
   return (
@@ -150,12 +167,12 @@ function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
         type="file"
         accept="image/*"
         onChange={(e) => onImageSelected(e.target.files?.[0])}
-        ref={inputRef}
+        ref={fileInputRef}
         className="sr-only hidden"
       />
       <button
         type="button"
-        onClick={() => inputRef.current?.click()}
+        onClick={() => fileInputRef.current?.click()}
         className="group relative block"
       >
         <Image
@@ -169,6 +186,19 @@ function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
           <Camera size={24} />
         </span>
       </button>
+      {imageToCrop && (
+        <CropImageDialog
+          src={URL.createObjectURL(imageToCrop)}
+          cropAspectRatio={1}
+          onCropped={onImageCropped}
+          onClose={() => {
+            setImageToCrop(undefined);
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+          }}
+        />
+      )}
     </>
   );
 }
