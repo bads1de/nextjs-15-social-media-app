@@ -2,15 +2,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useState } from "react";
 
-/**
- * 添付ファイルのインターフェース
- */
 export interface Attachment {
-  /** ファイル */
   file: File;
-  /** メディアID */
   mediaId?: string;
-  /** アップロード中かどうか */
   isUploading: boolean;
 }
 
@@ -60,8 +54,8 @@ export function useMediaUpload() {
 
           return {
             ...a,
-            isUploading: false,
             mediaId: uploadResult.serverData.mediaId,
+            isUploading: false,
           };
         }),
       );
@@ -73,7 +67,7 @@ export function useMediaUpload() {
       // エラートーストを表示する
       toast({
         variant: "destructive",
-        description: "添付ファイルのアップロードに失敗しました",
+        description: e.message,
       });
     },
   });
@@ -93,7 +87,7 @@ export function useMediaUpload() {
     }
 
     // 5つ以上の添付ファイルはアップロードできないようにする
-    if (arguments.length + attachments.length > 5) {
+    if (attachments.length + attachments.length > 5) {
       toast({
         variant: "destructive",
         description: "5つ以上の添付ファイルをアップロードできません",
