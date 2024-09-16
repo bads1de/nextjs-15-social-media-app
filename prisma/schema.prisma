@@ -5,16 +5,15 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
-
 
 model User {
   id           String    @id
@@ -29,7 +28,7 @@ model User {
   posts        Post[]
   following    Follow[]  @relation("Following")
   followers    Follow[]  @relation("Followers")
-
+  likes        Like[]
 
   createdAt DateTime @default(now())
 
@@ -45,7 +44,6 @@ model Session {
   @@map("sessions")
 }
 
-
 model Follow {
   followerId  String
   follower    User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
@@ -57,24 +55,26 @@ model Follow {
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  content   String
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String  @id @default(cuid())
+  content     String
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments Media[]
-  createdAt DateTime  @default(now())
+  likes       Like[]
+
+  createdAt DateTime @default(now())
 
   @@map("posts")
 }
 
 model Media {
-  id        String    @id @default(cuid())
-  postId    String?
-  post      Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
-  type      MediaType 
-  url       String
+  id     String    @id @default(cuid())
+  postId String?
+  post   Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
+  type   MediaType
+  url    String
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@map("post_media")
 }
@@ -82,4 +82,14 @@ model Media {
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+model Like {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("likes")
 }
