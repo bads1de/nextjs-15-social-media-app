@@ -21,13 +21,13 @@ interface PageProps {
 
 const getPost = cache(async (postId: string, loggedInUserId: string) => {
   const post = await prisma.post.findUnique({
-    where: { id: postId },
+    where: {
+      id: postId,
+    },
     include: getPostDataInclude(loggedInUserId),
   });
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   return post;
 });
