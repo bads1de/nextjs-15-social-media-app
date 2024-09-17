@@ -12,6 +12,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import Notification from "./Notification";
+import NotificationLoadingSkeleton from "./NotificationLoadingSkeleton";
 
 export default function Notifications() {
   const {
@@ -55,7 +56,7 @@ export default function Notifications() {
   const notifications = data?.pages.flatMap((page) => page.notifications) || [];
 
   if (status === "pending") {
-    return <PostsLoadingSkeleton />;
+    return <NotificationLoadingSkeleton />;
   }
 
   if (status === "success" && !notifications.length && !hasNextPage) {
