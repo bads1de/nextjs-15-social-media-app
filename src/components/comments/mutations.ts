@@ -1,54 +1,107 @@
-"use server";
+import { CommentsPage } from "@/lib/types";
+import {
+  InfiniteData,
+  QueryKey,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useToast } from "../ui/use-toast";
+import { deleteComment, submitComment } from "./actions";
 
-import { validateRequest } from "@/auth";
-import prisma from "@/lib/prisma";
-import { getCommentDataInclude, PostData } from "@/lib/types";
-import { createCommentSchema } from "@/lib/validation";
+export function useSubmitCommentMutation(postId: string) {
+  const { toast } = useToast();
 
-export async function submitComment({
-  post,
-  content,
-}: {
-  post: PostData;
-  content: string;
-}) {
-  const { user } = await validateRequest();
+  const queryClient = useQueryClient();
 
-  if (!user) throw new Error("Unauthorized");
+  const mutation = useMutation({
+    mutationFn: submitComment,
+    onSuccess: async (newComment) => {
+      const queryKey: QueryKey = ["comments", postId];
 
-  const { content: commentContent } = createCommentSchema.parse({
-    content,
-  });
+      await queryClient.cancelQueries({ queryKey });
 
-  const newComment = await prisma.comment.create({
-    data: {
-      content: commentContent,
-      userId: user.id,
-      postId: post.id,
+      queryClient.setQueryData<InfiniteData<CommentsPage, string | null>>(
+        queryKey,
+        (oldData) => {
+          const firstPage = oldData?.pages[0];
+
+          if (firstPage) {
+            return {
+              pageParams: oldData.pageParams,
+              pages: [
+                {
+                  previousCursor: firstPage.previousCursor,
+                  comments: [...firstPage.comments, newComment],
+                },
+                ...oldData.pages.slice(1),
+              ],
+            };
+          }
+        },
+      );
+
+      queryClient.invalidateQueries({
+        queryKey,
+        predicate(query) {
+          return !query.state.data;
+        },
+      });
+
+      toast({
+        description: "コメントを投稿しました!",
+      });
     },
-    include: getCommentDataInclude(user.id),
+    onError(error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "コメントの投稿に失敗しました",
+      });
+    },
   });
 
-  return newComment;
+  return mutation;
 }
 
-export async function deleteComment(id: string) {
-  const { user } = await validateRequest();
+export function useDeleteCommentMutation() {
+  const { toast } = useToast();
 
-  if (!user) throw new Error("Unauthorized");
+  const queryClient = useQueryClient();
 
-  const comment = await prisma.comment.findUnique({
-    where: { id },
+  const mutation = useMutation({
+    mutationFn: deleteComment,
+    onSuccess: async (deleteComment) => {
+      const queryKey: QueryKey = ["comments", deleteComment.id];
+
+      await queryClient.cancelQueries({ queryKey });
+
+      queryClient.setQueryData<InfiniteData<CommentsPage, string | null>>(
+        queryKey,
+        (oldData) => {
+          if (!oldData) return;
+
+          return {
+            pageParams: oldData.pageParams,
+            pages: oldData.pages.map((page) => ({
+              previousCursor: page.previousCursor,
+              comments: page.comments.filter((c) => c.id !== deleteComment.id),
+            })),
+          };
+        },
+      );
+
+      toast({
+        description: "コメントを削除しました",
+      });
+    },
+    onError(error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "コメントの削除に失敗しました",
+      });
+    },
   });
 
-  if (!comment) throw new Error("Comment not found");
-
-  if (comment.userId !== user.id) throw new Error("Unauthorized");
-
-  const deletedComment = await prisma.comment.delete({
-    where: { id },
-    include: getCommentDataInclude(user.id),
-  });
-
-  return deletedComment;
+  return mutation;
 }
