@@ -7,10 +7,13 @@ import {
 } from "@tanstack/react-query";
 import { useToast } from "../ui/use-toast";
 import { deleteComment, submitComment } from "./actions";
-
+/**
+ * コメントを送信するためのmutation
+ * @param postId - 投稿ID
+ * @returns mutation - mutationオブジェクト
+ */
 export function useSubmitCommentMutation(postId: string) {
   const { toast } = useToast();
-
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -20,12 +23,14 @@ export function useSubmitCommentMutation(postId: string) {
 
       await queryClient.cancelQueries({ queryKey });
 
+      // コメント投稿後のキャッシュ更新処理
       queryClient.setQueryData<InfiniteData<CommentsPage, string | null>>(
         queryKey,
         (oldData) => {
           const firstPage = oldData?.pages[0];
 
           if (firstPage) {
+            // 古いデータの最初のページに新しいコメントを追加し、新しいデータを作成
             return {
               pageParams: oldData.pageParams,
               pages: [
@@ -40,6 +45,7 @@ export function useSubmitCommentMutation(postId: string) {
         },
       );
 
+      // データがないクエリを無効化し、再取得を促す
       queryClient.invalidateQueries({
         queryKey,
         predicate(query) {
@@ -63,9 +69,12 @@ export function useSubmitCommentMutation(postId: string) {
   return mutation;
 }
 
+/**
+ * コメントを削除するためのmutation
+ * @returns mutation - mutationオブジェクト
+ */
 export function useDeleteCommentMutation() {
   const { toast } = useToast();
-
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -75,11 +84,13 @@ export function useDeleteCommentMutation() {
 
       await queryClient.cancelQueries({ queryKey });
 
+      // コメント削除後のキャッシュ更新処理
       queryClient.setQueryData<InfiniteData<CommentsPage, string | null>>(
         queryKey,
         (oldData) => {
           if (!oldData) return;
 
+          // 削除されたコメントを除外した新しいデータを作成
           return {
             pageParams: oldData.pageParams,
             pages: oldData.pages.map((page) => ({
