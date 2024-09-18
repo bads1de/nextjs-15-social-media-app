@@ -30,7 +30,10 @@ export default function Chat() {
               : "str-chat__theme-light"
           }
         >
-          <ChatSidebar />
+          <ChatSidebar
+            open={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
           <ChatChannel
             open={!sidebarOpen}
             openSidebar={() => setSidebarOpen(true)}
