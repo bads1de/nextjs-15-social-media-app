@@ -33,3 +33,21 @@ export function formatNumber(n: number): string {
     maximumFractionDigits: 1,
   }).format(n);
 }
+
+/**
+ * 文字列をスラッグ化します。スラッグ化は以下の手順で行われます。
+ *
+ * 1. 小文字に変換する
+ * 2. スペースをハイフンに置き換える
+ * 3. 英数字とハイフン以外の文字を削除する
+ *
+ * これは文字列からURLを生成するのに便利です。
+ * @param input スラッグ化する入力文字列
+ * @returns スラッグ化された文字列
+ */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/ /g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
