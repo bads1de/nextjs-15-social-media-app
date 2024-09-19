@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "./LoginForm";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 // TODO: 後でデザインを修正する
 export const metadata: Metadata = {
@@ -16,6 +17,12 @@ export default function Page() {
         <div className="w-full space-y-10 overflow-y-auto p-10 md:w-1/2">
           <h1 className="text-center text-3xl font-bold">ログイン</h1>
           <div className="space-y-5">
+            <GoogleSignInButton />
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-muted" />
+              <span>OR</span>
+              <div className="h-px flex-1 bg-muted" />
+            </div>
             <LoginForm />
             <Link href="/signup" className="block text-center hover:underline">
               新規登録はこちら

@@ -65,7 +65,7 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>パスワード</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="Password" {...field} />
+                <PasswordInput placeholder="パスワード" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
