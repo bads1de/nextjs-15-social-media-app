@@ -45,7 +45,7 @@ export default function CropImageDialog({
     <Dialog open onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Crop image</DialogTitle>
+          <DialogTitle>画像を切り取る</DialogTitle>
         </DialogHeader>
         <Cropper
           src={src}
@@ -59,7 +59,7 @@ export default function CropImageDialog({
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={crop}>Crop</Button>
+          <Button onClick={crop}>切り取る</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
