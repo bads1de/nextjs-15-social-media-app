@@ -14,6 +14,8 @@ import { cache } from "react";
 import UserPosts from "./UserPosts";
 import Linkify from "@/components/Linkify";
 import EditProfileButton from "./EditProfileButton";
+import { TabsTrigger, Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
+import UserLikedPosts from "./UserLikedPost";
 
 interface PageProps {
   params: {
@@ -72,12 +74,22 @@ export default async function Page({ params: { username } }: PageProps) {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <UserProfile user={user} loggedInUserId={loggedInUser.id} />
-        {/* <div className="rounded-2xl bg-card p-5 shadow-sm">
-          {/* <h2 className="text-center text-2xl font-bold">
-            {user.displayName}&apos;s Posts
-          </h2> */}
-        {/* </div> */}
-        <UserPosts userId={user.id} />
+        <Tabs defaultValue="post">
+          <TabsList>
+            <TabsTrigger value="post">ポスト</TabsTrigger>
+            <TabsTrigger value="liked">いいね</TabsTrigger>
+          </TabsList>
+          <TabsContent value="post">
+            <div className="mt-4">
+              <UserPosts userId={user.id} />
+            </div>
+          </TabsContent>
+          <TabsContent value="liked">
+            <div className="mt-4">
+              <UserLikedPosts userId={user.id} />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
       <TrendsSidebar />
     </main>

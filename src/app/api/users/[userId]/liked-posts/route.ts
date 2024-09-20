@@ -9,7 +9,6 @@ export async function GET(
 ) {
   try {
     const cursor = req.nextUrl.searchParams.get("cursor") || undefined;
-
     const pageSize = 10;
 
     const { user } = await validateRequest();
@@ -22,14 +21,21 @@ export async function GET(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const posts = await prisma.post.findMany({
+    const likedPosts = await prisma.like.findMany({
       where: { userId },
-      include: getPostDataInclude(user.id),
-      orderBy: { createdAt: "desc" },
+      include: {
+        post: {
+          include: getPostDataInclude(user.id),
+        },
+      },
+      orderBy: { post: { createdAt: "desc" } },
       take: pageSize + 1,
-      cursor: cursor ? { id: cursor } : undefined,
+      cursor: cursor
+        ? { userId_postId: { userId, postId: cursor } }
+        : undefined,
     });
 
+    const posts = likedPosts.map((like) => like.post);
     const nextCursor = posts.length > pageSize ? posts[pageSize].id : null;
 
     const data: PostsPage = {

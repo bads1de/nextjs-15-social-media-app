@@ -8,11 +8,11 @@ import { PostsPage } from "@/lib/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
-interface UserPostsProps {
+interface UserLikedPostsProps {
   userId: string;
 }
 
-export default function UserPosts({ userId }: UserPostsProps) {
+export default function UserLikedPosts({ userId }: UserLikedPostsProps) {
   const {
     data,
     fetchNextPage,
@@ -21,11 +21,11 @@ export default function UserPosts({ userId }: UserPostsProps) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["post-feed", "user-posts", userId],
+    queryKey: ["liked-posts", userId],
     queryFn: ({ pageParam }) =>
       kyInstance
         .get(
-          `/api/users/${userId}/posts`,
+          `/api/users/${userId}/liked-posts`,
           pageParam ? { searchParams: { cursor: pageParam } } : {},
         )
         .json<PostsPage>(),
@@ -41,7 +41,9 @@ export default function UserPosts({ userId }: UserPostsProps) {
 
   if (status === "success" && !posts.length && !hasNextPage) {
     return (
-      <p className="text-center text-muted-foreground">投稿はありません。</p>
+      <p className="text-center text-muted-foreground">
+        まだ投稿にいいねをしていません。
+      </p>
     );
   }
 
