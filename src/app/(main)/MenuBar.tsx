@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Bell, Bookmark, Home, Mail } from "lucide-react";
+import { User, Bookmark, Home } from "lucide-react";
 import Link from "next/link";
 import NotificationsButton from "./NotificationsButton";
 import { validateRequest } from "@/auth";
@@ -54,6 +54,17 @@ export default async function MenuBar({ className }: MenuBarProps) {
         <Link href="/bookmarks">
           <Bookmark />
           <span className="hidden lg:inline">ブックマーク</span>
+        </Link>
+      </Button>
+      <Button
+        variant="ghost"
+        className="flex items-center justify-start gap-3"
+        title="Profile"
+        asChild
+      >
+        <Link href={`/users/${user.username}`}>
+          <User />
+          <span className="hidden lg:inline">プロフィール</span>
         </Link>
       </Button>
     </div>
