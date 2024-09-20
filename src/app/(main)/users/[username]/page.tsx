@@ -5,7 +5,12 @@ import TrendsSidebar from "@/components/TrendsSidebar";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
-import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
+import {
+  FollowerInfo,
+  FollowingsInfo,
+  getUserDataSelect,
+  UserData,
+} from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { Metadata } from "next";
@@ -16,6 +21,7 @@ import Linkify from "@/components/Linkify";
 import EditProfileButton from "./EditProfileButton";
 import { TabsTrigger, Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
 import UserLikedPosts from "./UserLikedPost";
+import FollowingCount from "@/components/FollowingCount";
 
 interface PageProps {
   params: {
@@ -114,8 +120,15 @@ function UserProfile({ user, loggedInUserId }: UserProfileProps) {
     ),
   };
 
+  const followingInfo: FollowingsInfo = {
+    followings: user._count.following,
+    isFollowingByUser: user.following.some(
+      (follow) => follow.followingId === loggedInUserId,
+    ),
+  };
+
   return (
-    <div className="mx-auto max-w-2xl rounded-2xl bg-card p-8 shadow-sm">
+    <div className="relative mx-auto max-w-2xl rounded-2xl bg-card p-8 shadow-sm">
       <div className="flex flex-col items-center gap-8 md:flex-row md:items-start">
         <UserAvatar
           avatarUrl={user.avatarUrl}
@@ -141,16 +154,20 @@ function UserProfile({ user, loggedInUserId }: UserProfileProps) {
               </span>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <div className="flex flex-row gap-3 pr-24">
+            <FollowingCount userId={user.id} initialState={followingInfo} />
             <FollowerCount userId={user.id} initialState={followerInfo} />
-            {user.id === loggedInUserId ? (
-              <EditProfileButton user={user} />
-            ) : (
+            {user.id !== loggedInUserId && (
               <FollowButton userId={user.id} initialState={followerInfo} />
             )}
           </div>
         </div>
       </div>
+      {user.id === loggedInUserId && (
+        <div className="absolute right-8 top-8">
+          <EditProfileButton user={user} />
+        </div>
+      )}
       {user.bio && (
         <div className="mt-8 border-t pt-6">
           <Linkify>
