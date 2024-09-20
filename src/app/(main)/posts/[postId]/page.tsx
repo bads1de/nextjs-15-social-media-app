@@ -79,7 +79,7 @@ interface UserInfoSidebarProps {
   user: UserData;
 }
 
-export async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
+async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
   const { user: loggedInUser } = await validateRequest();
 
   if (!loggedInUser) return null;
