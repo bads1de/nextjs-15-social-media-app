@@ -115,6 +115,11 @@ export interface FollowerInfo {
   isFollowedByUser: boolean;
 }
 
+export interface FollowingsInfo {
+  followings: number;
+  isFollowingByUser: boolean;
+}
+
 export interface LikeInfo {
   likes: number;
   isLikedByUser: boolean;
