@@ -128,53 +128,55 @@ function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   };
 
   return (
-    <div className="relative mx-auto max-w-2xl rounded-2xl bg-card p-8 shadow-sm">
-      <div className="flex flex-col items-center gap-8 md:flex-row md:items-start">
-        <UserAvatar
-          avatarUrl={user.avatarUrl}
-          size={150}
-          className="rounded-full"
-        />
+    <div className="relative mx-auto max-w-2xl rounded-lg bg-card p-8 shadow-md">
+      <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
+        <div className="relative">
+          <UserAvatar
+            avatarUrl={user.avatarUrl}
+            size={150}
+            className="rounded-full border-4 border-gray-200"
+          />
+          {user.id === loggedInUserId && (
+            <div className="absolute bottom-0 right-0">
+              <EditProfileButton user={user} />
+            </div>
+          )}
+        </div>
         <div className="flex-grow space-y-4">
-          <div className="text-center md:text-left">
-            <h1 className="text-3xl font-bold">{user.displayName}</h1>
-            <div className="text-muted-foreground">@{user.username}</div>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4 md:justify-start">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              投稿:{" "}
-              <span className="font-semibold">
-                {formatNumber(user._count.posts)}
-              </span>
+              <h1 className="text-2xl font-bold">{user.displayName}</h1>
+              <div className="text-gray-600">@{user.username}</div>
             </div>
-            <div>
-              登録日:{" "}
-              <span className="font-semibold">
-                {formatDate(user.createdAt, "yyyy-MM-dd")}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-row gap-3 pr-24">
-            <FollowingCount userId={user.id} initialState={followingInfo} />
-            <FollowerCount userId={user.id} initialState={followerInfo} />
             {user.id !== loggedInUserId && (
               <FollowButton userId={user.id} initialState={followerInfo} />
             )}
           </div>
+          <div className="flex flex-wrap gap-4 text-gray-600">
+            <div>
+              <span className="font-medium">投稿:</span>{" "}
+              {formatNumber(user._count.posts)}
+            </div>
+            <div>
+              <span className="font-medium">登録日:</span>{" "}
+              {formatDate(user.createdAt, "yyyy-MM-dd")}
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <FollowingCount userId={user.id} initialState={followingInfo} />
+            <FollowerCount userId={user.id} initialState={followerInfo} />
+          </div>
+          {user.bio && (
+            <div className="mt-4 border-t pt-4 text-gray-700">
+              <Linkify>
+                <div className="whitespace-pre-line break-words">
+                  {user.bio}
+                </div>
+              </Linkify>
+            </div>
+          )}
         </div>
       </div>
-      {user.id === loggedInUserId && (
-        <div className="absolute right-8 top-8">
-          <EditProfileButton user={user} />
-        </div>
-      )}
-      {user.bio && (
-        <div className="mt-8 border-t pt-6">
-          <Linkify>
-            <div className="whitespace-pre-line break-words">{user.bio}</div>
-          </Linkify>
-        </div>
-      )}
     </div>
   );
 }
