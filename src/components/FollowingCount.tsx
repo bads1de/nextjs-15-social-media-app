@@ -1,12 +1,12 @@
 "use client";
 
 import useFollowingInfo from "@/hooks/useFollowingInfo";
-import { FollowingsInfo } from "@/lib/types";
+import { FollowingInfo } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 
 interface FollowingCountProps {
   userId: string;
-  initialState: FollowingsInfo;
+  initialState: FollowingInfo;
 }
 
 export default function FollowingCount({
