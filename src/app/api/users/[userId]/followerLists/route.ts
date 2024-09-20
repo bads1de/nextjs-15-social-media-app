@@ -4,7 +4,7 @@ import { getUserDataSelect } from "@/lib/types";
 import { NextRequest } from "next/server";
 
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   { params: { userId } }: { params: { userId: string } },
 ) {
   try {
@@ -14,18 +14,18 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const followingUsers = await prisma.user.findMany({
+    const followerUsers = await prisma.user.findMany({
       where: {
-        followers: {
+        following: {
           some: {
-            followerId: user.id,
+            followingId: user.id,
           },
         },
       },
       select: getUserDataSelect(user.id),
     });
 
-    return Response.json(followingUsers);
+    return Response.json(followerUsers);
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
