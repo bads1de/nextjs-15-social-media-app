@@ -1,6 +1,6 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { FollowingsInfo } from "@/lib/types";
+import { FollowingInfo } from "@/lib/types";
 
 export async function GET(
   request: Request,
@@ -36,7 +36,7 @@ export async function GET(
       return Response.json({ error: "User not found" }, { status: 404 });
     }
 
-    const data: FollowingsInfo = {
+    const data: FollowingInfo = {
       followings: user._count.following,
       isFollowingByUser: !!user.following.length,
     };

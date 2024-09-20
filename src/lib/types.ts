@@ -124,7 +124,7 @@ export interface FollowerInfo {
   isFollowedByUser: boolean;
 }
 
-export interface FollowingsInfo {
+export interface FollowingInfo {
   followings: number;
   isFollowingByUser: boolean;
 }

@@ -7,7 +7,7 @@ import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
 import {
   FollowerInfo,
-  FollowingsInfo,
+  FollowingInfo,
   getUserDataSelect,
   UserData,
 } from "@/lib/types";
@@ -120,7 +120,7 @@ function UserProfile({ user, loggedInUserId }: UserProfileProps) {
     ),
   };
 
-  const followingInfo: FollowingsInfo = {
+  const followingInfo: FollowingInfo = {
     followings: user._count.following,
     isFollowingByUser: user.following.some(
       (follow) => follow.followingId === loggedInUserId,
