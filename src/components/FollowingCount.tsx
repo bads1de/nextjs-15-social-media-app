@@ -3,6 +3,8 @@
 import useFollowingInfo from "@/hooks/useFollowingInfo";
 import { FollowingInfo } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
+import { useState } from "react";
+import { FollowingListModal } from "./FollowingListModal";
 
 interface FollowingCountProps {
   userId: string;
@@ -14,11 +16,22 @@ export default function FollowingCount({
   initialState,
 }: FollowingCountProps) {
   const { data } = useFollowingInfo(userId, initialState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <span className="text-sm text-slate-500">
-      フォロー中:{" "}
-      <span className="font-semibold">{formatNumber(data.followings)}</span>
-    </span>
+    <>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="text-sm text-slate-500 hover:underline"
+      >
+        フォロー中:{" "}
+        <span className="font-semibold">{formatNumber(data.followings)}</span>
+      </button>
+      <FollowingListModal
+        userId={userId}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }
