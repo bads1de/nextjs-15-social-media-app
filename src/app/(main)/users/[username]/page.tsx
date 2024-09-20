@@ -74,21 +74,26 @@ export default async function Page({ params: { username } }: PageProps) {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <UserProfile user={user} loggedInUserId={loggedInUser.id} />
+
         <Tabs defaultValue="post">
           <TabsList>
             <TabsTrigger value="post">ポスト</TabsTrigger>
-            <TabsTrigger value="liked">いいね</TabsTrigger>
+            {user.id === loggedInUser.id && (
+              <TabsTrigger value="liked">いいね</TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value="post">
             <div className="mt-4">
               <UserPosts userId={user.id} />
             </div>
           </TabsContent>
-          <TabsContent value="liked">
-            <div className="mt-4">
-              <UserLikedPosts userId={user.id} />
-            </div>
-          </TabsContent>
+          {user.id === loggedInUser.id && (
+            <TabsContent value="liked">
+              <div className="mt-4">
+                <UserLikedPosts userId={user.id} />
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
       <TrendsSidebar />
@@ -101,7 +106,7 @@ interface UserProfileProps {
   loggedInUserId: string;
 }
 
-async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
+function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   const followerInfo: FollowerInfo = {
     followers: user._count.followers,
     isFollowedByUser: user.followers.some(
@@ -110,44 +115,48 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   };
 
   return (
-    <div className="h-fit w-full space-y-5 rounded-2xl bg-card p-5 shadow-sm">
-      <UserAvatar
-        avatarUrl={user.avatarUrl}
-        size={250}
-        className="mx-auto size-full max-h-60 max-w-60 rounded-full"
-      />
-      <div className="flex flex-wrap gap-3 sm:flex-nowrap">
-        <div className="me-auto space-y-3">
-          <div>
+    <div className="mx-auto max-w-2xl rounded-2xl bg-card p-8 shadow-sm">
+      <div className="flex flex-col items-center gap-8 md:flex-row md:items-start">
+        <UserAvatar
+          avatarUrl={user.avatarUrl}
+          size={150}
+          className="rounded-full"
+        />
+        <div className="flex-grow space-y-4">
+          <div className="text-center md:text-left">
             <h1 className="text-3xl font-bold">{user.displayName}</h1>
             <div className="text-muted-foreground">@{user.username}</div>
           </div>
-          <div>{formatDate(user.createdAt, "yyyy-MM-dd")}</div>
-          <div className="flex items-center gap-3">
-            <span>
+          <div className="flex flex-wrap justify-center gap-4 md:justify-start">
+            <div>
               投稿:{" "}
               <span className="font-semibold">
                 {formatNumber(user._count.posts)}
               </span>
-            </span>
+            </div>
+            <div>
+              登録日:{" "}
+              <span className="font-semibold">
+                {formatDate(user.createdAt, "yyyy-MM-dd")}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
             <FollowerCount userId={user.id} initialState={followerInfo} />
+            {user.id === loggedInUserId ? (
+              <EditProfileButton user={user} />
+            ) : (
+              <FollowButton userId={user.id} initialState={followerInfo} />
+            )}
           </div>
         </div>
-        {user.id === loggedInUserId ? (
-          <EditProfileButton user={user} />
-        ) : (
-          <FollowButton userId={user.id} initialState={followerInfo} />
-        )}
       </div>
       {user.bio && (
-        <>
-          <hr />
+        <div className="mt-8 border-t pt-6">
           <Linkify>
-            <div className="overflow-hidden whitespace-pre-line break-words">
-              {user.bio}
-            </div>
+            <div className="whitespace-pre-line break-words">{user.bio}</div>
           </Linkify>
-        </>
+        </div>
       )}
     </div>
   );

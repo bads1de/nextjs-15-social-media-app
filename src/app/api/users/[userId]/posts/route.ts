@@ -18,10 +18,6 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (user.id !== userId) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const posts = await prisma.post.findMany({
       where: { userId },
       include: getPostDataInclude(user.id),
