@@ -18,9 +18,10 @@ export async function GET(
       where: {
         following: {
           some: {
-            followingId: user.id,
+            followingId: userId,
           },
         },
+        ...(userId === user.id ? { id: { not: user.id } } : {}),
       },
       select: getUserDataSelect(user.id),
     });
