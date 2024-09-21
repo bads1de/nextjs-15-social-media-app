@@ -33,7 +33,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
-        title="Home"
+        title="ホーム"
         asChild
       >
         <Link href="/">
@@ -48,7 +48,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
-        title="Bookmarks"
+        title="ブックマーク"
         asChild
       >
         <Link href="/bookmarks">
@@ -59,7 +59,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
-        title="Profile"
+        title="プロフィール"
         asChild
       >
         <Link href={`/users/${user.username}`}>
