@@ -3,11 +3,20 @@ import TrendsSidebar from "@/components/TrendsSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FollowingFeed from "./FollowingFeed";
 import ForYouFeed from "./ForYouFeed";
+import ShortVideoGallery from "@/components/shorts/ShortVideoGallery";
+
+const sampleVideos = [
+  { videoUrl: "/video1.mp4", title: "Video 1" },
+  { videoUrl: "/video2.mp4", title: "Video 2" },
+  { videoUrl: "/video3.mp4", title: "Video 3" },
+];
+
 export default async function Home() {
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <PostEditor />
+        <ShortVideoGallery videos={sampleVideos} />
         <Tabs defaultValue="for-you">
           <TabsList>
             <TabsTrigger value="for-you">おすすめ</TabsTrigger>

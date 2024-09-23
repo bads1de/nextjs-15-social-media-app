@@ -24,7 +24,7 @@ export function FollowingListModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>フォロー中のユーザー</DialogTitle>
+          <DialogTitle>フォロー中</DialogTitle>
         </DialogHeader>
         {isLoading && <p>読み込み中...</p>}
         {error && <p>エラーが発生しました</p>}
