@@ -37,7 +37,7 @@ const ShortVideoGallery: React.FC<ShortVideoGalleryProps> = ({ videos }) => {
       </div>
 
       {/* モバイルサイズ*/}
-      <div className="flex items-center lg:hidden">
+      <div className="flex items-center justify-center lg:hidden">
         <button
           onClick={handlePrev}
           className="absolute left-0 z-10 rounded-full p-2 text-white"

@@ -35,7 +35,6 @@ const ShortVideoCard: React.FC<ShortVideoCardProps> = ({ videoUrl, title }) => {
 
   return (
     <div
-      className="short-video-card"
       onMouseEnter={!isMobile ? handleMouseEnter : undefined}
       onMouseLeave={!isMobile ? handleMouseLeave : undefined}
     >
@@ -44,7 +43,7 @@ const ShortVideoCard: React.FC<ShortVideoCardProps> = ({ videoUrl, title }) => {
         muted
         loop
         autoPlay={isMobile}
-        className="h-auto w-full rounded-lg"
+        className={`h-auto w-full rounded-lg`}
         ref={videoRef}
       >
         <source src={videoUrl} type="video/mp4" />
