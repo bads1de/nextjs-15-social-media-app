@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ShortVideoCardProps {
   videoUrl: string;
@@ -8,6 +8,18 @@ interface ShortVideoCardProps {
 
 const ShortVideoCard: React.FC<ShortVideoCardProps> = ({ videoUrl, title }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleMouseEnter = () => {
     if (videoRef.current) {
@@ -24,13 +36,14 @@ const ShortVideoCard: React.FC<ShortVideoCardProps> = ({ videoUrl, title }) => {
   return (
     <div
       className="short-video-card"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={!isMobile ? handleMouseEnter : undefined}
+      onMouseLeave={!isMobile ? handleMouseLeave : undefined}
     >
       <video
         controls
         muted
         loop
+        autoPlay={isMobile}
         className="h-auto w-full rounded-lg"
         ref={videoRef}
       >
