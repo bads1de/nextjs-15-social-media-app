@@ -8,7 +8,7 @@ import ShortVideoGallery from "@/components/shorts/ShortVideoGallery";
 const sampleVideos = [
   { videoUrl: "/video1.mp4", title: "Video 1" },
   { videoUrl: "/video2.mp4", title: "Video 2" },
-  { videoUrl: "/video2.mp4", title: "Video 3" },
+  { videoUrl: "/video3.mp4", title: "Video 3" },
 ];
 
 export default async function Home() {
