@@ -16,10 +16,10 @@ export default async function Home() {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <PostEditor />
-        <div className="rounded-2xl bg-card p-5 shadow-sm">
+        {/* <div className="rounded-2xl bg-card p-5 shadow-sm">
           <h1 className="text-center text-2xl font-bold">Short Vibes!</h1>
         </div>
-        <ShortVideoGallery videos={sampleVideos} />
+        <ShortVideoGallery videos={sampleVideos} /> */}
         <Tabs defaultValue="for-you">
           <TabsList>
             <TabsTrigger value="for-you">おすすめ</TabsTrigger>
